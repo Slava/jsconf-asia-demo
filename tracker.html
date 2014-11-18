@@ -54,6 +54,8 @@
 
 
     // Chart.js example
+    var ctx = document.getElementById("chartjs-mount").getContext("2d");
+    var temperatureChart;
     Tracker.autorun(function () {
       var data = {
         labels: daysOfWeek,
@@ -69,8 +71,13 @@
         }]
       };
 
-      var ctx = document.getElementById("chartjs-mount").getContext("2d");
-      var temperatureChart = new Chart(ctx).Line(data);
+      if (! temperatureChart)
+        temperatureChart = new Chart(ctx).Line(data);
+      else {
+        for (var i = 0; i < temperatures.length(); i++)
+          temperatureChart.datasets[0].points[i].value = temperatures.get(i);
+        temperatureChart.update();
+      }
     });
   </script>
 </body>
