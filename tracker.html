@@ -1,0 +1,77 @@
+<head>
+  <title>Demo of Tracker</title>
+  <!-- Tracker -->
+  <script type="text/javascript" src="tracker.js"></script>
+  <!-- Tracker data-structures -->
+  <script type="text/javascript" src="reactive-array.js"></script>
+  <script type="text/javascript" src="reactive-var.js"></script>
+  <script type="text/javascript" src="reactive-dict.js"></script>
+
+
+  <!-- Rendering libs -->
+  <script type="text/javascript" src="react-with-addons.min.js"></script>
+  <script type="text/javascript" src="chart.min.js"></script>
+</head>
+
+<body>
+  <div>
+    <p>Today is a beautiful day. Today is <span id="day">Saturday</span>!</p>
+  </div>
+
+  <div id="react-mount">
+  </div>
+
+  <canvas id="chartjs-mount" width="400" height="400"></canvas>
+
+  <script type="text/javascript">
+    var daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    var temperatures = new ReactiveArray([25, 31, 30, 32, 31, 27, 19]);
+    var currentDate = new ReactiveVar(new Date);
+
+    // Manual DOM manipulations
+    Tracker.autorun(function () {
+      var date = currentDate.get();
+      document.getElementById("day").innerText = daysOfWeek[date.getDay()];
+    });
+
+    // React.js example
+    var OrderedList = React.createClass({
+      render: function() {
+        var liElements = temperatures.toArray().map(function (temp, index) {
+          return React.DOM.li(null, daysOfWeek[index] + ": " + temp);
+        });
+        return React.DOM.div(null, [
+          React.DOM.p(null, "Temperature forecast for the week"),
+          React.DOM.ol(null, liElements)
+        ]);
+      }
+    });
+
+    Tracker.autorun(function () {
+      React.render(React.createElement(OrderedList, null),
+                   document.getElementById("react-mount"));
+    });
+
+
+    // Chart.js example
+    Tracker.autorun(function () {
+      var data = {
+        labels: daysOfWeek,
+        datasets: [{
+          label: "Forecast",
+          fillColor: "rgba(220,220,220,0.2)",
+          strokeColor: "rgba(220,220,220,1)",
+          pointColor: "rgba(220,220,220,1)",
+          pointStrokeColor: "#fff",
+          pointHighlightFill: "#fff",
+          pointHighlightStroke: "rgba(220,220,220,1)",
+          data: temperatures.toArray()
+        }]
+      };
+
+      var ctx = document.getElementById("chartjs-mount").getContext("2d");
+      var temperatureChart = new Chart(ctx).Line(data);
+    });
+  </script>
+</body>
+
