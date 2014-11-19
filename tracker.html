@@ -15,13 +15,13 @@
 
 <body>
   <div>
-    <p>Today is a beautiful day. Today is <span id="day">Saturday</span>!</p>
+    <p>Today is a beautiful day. Today is <span id="day">Saturday</span> and the forecast for today is <span id="forecast">44</span> degrees Celsius!</p>
   </div>
 
   <div id="react-mount">
   </div>
 
-  <canvas id="chartjs-mount" width="400" height="400"></canvas>
+  <canvas id="chartjs-mount" width="250" height="250"></canvas>
 
   <script type="text/javascript">
     var daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -32,13 +32,14 @@
     Tracker.autorun(function () {
       var date = currentDate.get();
       document.getElementById("day").innerText = daysOfWeek[date.getDay()];
+      document.getElementById("forecast").innerText = temperatures.get(date.getDay());
     });
 
     // React.js example
     var OrderedList = React.createClass({
       render: function() {
         var liElements = temperatures.toArray().map(function (temp, index) {
-          return React.DOM.li(null, daysOfWeek[index] + ": " + temp);
+          return React.DOM.li(null, daysOfWeek[index] + ": " + temp + "C");
         });
         return React.DOM.div(null, [
           React.DOM.p(null, "Temperature forecast for the week"),
@@ -79,6 +80,19 @@
         temperatureChart.update();
       }
     });
+
+
+    // Other
+    // Randomly simulate getting new data from the weather forecast server.
+    var maxDelta = 10;
+    var randomlyUpdateForecast = function () {
+      var day = Math.floor(Math.random() * 7);
+      var delta = Math.floor(Math.random() * (maxDelta * 2 + 1)) - maxDelta;
+      temperatures.set(day, temperatures.get(day) + delta);
+    };
+    var randomlyChangeDate = function () {
+      currentDate.set(new Date(2014, 11, Math.floor(Math.random() * 30 + 1)));
+    };
   </script>
 </body>
 
